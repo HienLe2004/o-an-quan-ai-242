@@ -87,6 +87,8 @@ class Cell:
     def deselect_cell(self):
         self.is_selected = False
     def update_dan(self, number):
+        if number < 0:
+            number = 0
         if len(self.angles) == number:
             return
         if len(self.angles) > number:
@@ -139,9 +141,9 @@ class Cell:
     def update(self):
         if (self.number == 0 or self.number == 6):
             return
-        if (self.game.player1Turn and self.number > 5):
+        if (self.game.player1_turn and self.number > 5):
             return
-        if (not self.game.player1Turn and self.number < 6):
+        if (not self.game.player1_turn and self.number < 6):
             return
         self.input()
         if (self.is_selected):

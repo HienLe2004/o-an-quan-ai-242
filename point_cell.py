@@ -37,6 +37,8 @@ class Point_Cell:
         if (value != 0):
             self.angles = [random.randint(-20,20) for _ in range(value)]
     def update_dan(self, number):
+        if number < 0:
+            number = 0
         if len(self.angles) == number:
             return
         #Lay dan
