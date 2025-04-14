@@ -1,6 +1,6 @@
 import copy
 import math
-
+import random
 
 # Ở file này nếu muốn lấy AI đánh thì có thể lấy player hay opponent đều được, truyền vào các tham chiếu liên quan thì nó sẽ return best_move gồm (new_board, new_quan_count, new_point_count)
 # Lưu ý thêm là opponent(board, quan_count, point_count, depth), depth là độ sâu tối đa cho minimax duyệt tới, tuy nhiên tui thấy cho depth = 4 lại ngon hơn depth = 6 :)))
@@ -106,7 +106,20 @@ def evaluate(board, quan_count, point_count):
     w1 = k * math.exp(-T1 / C)
 
     return (Q1 - Q2) + w1 * (s1 - s2)
-
+def player_random_move(board):
+    moves = []
+    for i in range(1,6):
+        if (board[i] != 0):
+            moves.append((i,1))
+            moves.append((i,-1))
+    return moves[random.randrange(0, len(moves) - 1)]
+def opponent_random_move(board):
+    moves = []
+    for i in range(7,12):
+        if (board[i] != 0):
+            moves.append((i,1))
+            moves.append((i,-1))
+    return moves[random.randrange(0, len(moves) - 1)]
 def minimax(board, quan_count, point_count, depth, is_maximizing):
     if depth == 0 or (quan_count[0] == 0 and quan_count[1] == 0):
         return evaluate(board, quan_count, point_count)
@@ -114,14 +127,14 @@ def minimax(board, quan_count, point_count, depth, is_maximizing):
     if is_maximizing:
         max_eval = -math.inf
         for move in find_successor_player(board, quan_count, point_count):
-            new_board, new_quan_count, new_point_count = move
+            new_board, new_quan_count, new_point_count, position, direection = move
             eval = minimax(new_board, new_quan_count, new_point_count, depth - 1, False)
             max_eval = max(max_eval, eval)
         return max_eval
     else:
         min_eval = math.inf
         for move in find_successor_opponent(board, quan_count, point_count):
-            new_board, new_quan_count, new_point_count = move
+            new_board, new_quan_count, new_point_count, position, direction = move
             eval = minimax(new_board, new_quan_count, new_point_count, depth - 1, True)
             min_eval = min(min_eval, eval)
         return min_eval
@@ -136,7 +149,7 @@ def find_successor_player(board, quan_count, point_count):
             new_point_count = copy.deepcopy(point_count)
 
             if logic_game_clone(new_board, new_quan_count, new_point_count, i, direction, True):
-                successor_player.append((new_board, new_quan_count, new_point_count))
+                successor_player.append((new_board, new_quan_count, new_point_count, i, direction))
     return successor_player
 
 def player(board, quan_count, point_count, depth):
@@ -144,7 +157,7 @@ def player(board, quan_count, point_count, depth):
     best_value = -math.inf
 
     for move in find_successor_player(board, quan_count, point_count):
-        new_board, new_quan_count, new_point_count = move
+        new_board, new_quan_count, new_point_count, position, direction = move
         move_value = minimax(new_board, new_quan_count, new_point_count, depth - 1, False)
         if move_value > best_value:
             best_value = move_value
@@ -161,7 +174,7 @@ def find_successor_opponent(board, quan_count, point_count):
             new_point_count = copy.deepcopy(point_count)
 
             if logic_game_clone(new_board, new_quan_count, new_point_count, i, direction, False):
-                successors.append((new_board, new_quan_count, new_point_count))
+                successors.append((new_board, new_quan_count, new_point_count, i, direction))
     return successors
 
 def opponent(board, quan_count, point_count, depth):
@@ -169,7 +182,7 @@ def opponent(board, quan_count, point_count, depth):
     best_value = math.inf
     
     for move in find_successor_opponent(board, quan_count, point_count):
-        new_board, new_quan_count, new_point_count = move
+        new_board, new_quan_count, new_point_count, position, direction = move
         move_value = minimax(new_board, new_quan_count, new_point_count, depth - 1, True)
         if move_value < best_value:
             best_value = move_value

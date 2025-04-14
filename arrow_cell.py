@@ -1,5 +1,5 @@
 from setting import *
-
+import asyncio
 class Arrow_Cell:
     arrow_image = pygame.image.load('images/arrow.png')
     hovered_color = (50, 30, 0)
@@ -21,8 +21,12 @@ class Arrow_Cell:
             if mouse_buttons[0]:
                 self.game.play(self.is_right)
 
+    def select_cell(self):
+        self.is_selected = True
+    def deselect_cell(self):
+        self.is_selected = False
     def draw(self):
-        if self.is_hovered:
+        if self.is_hovered or self.is_selected:
             edges = []
             if self.is_right:
                 edges = [(self.position[0]-self.size[0]*0.6,self.position[1]-self.size[1]*0.25),
